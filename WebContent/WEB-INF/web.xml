@@ -49,6 +49,10 @@
 		<servlet-name>EmpServlet</servlet-name>
 		<url-pattern>/emp</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>EmpServlet</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
 	
 	
 </web-app>

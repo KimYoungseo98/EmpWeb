@@ -13,6 +13,7 @@ public class EmpVo {
 	private double salary;
 	private double commissionPct;
 	private int managerId;
+	private int departmentId;
 	
 	public EmpVo() {
 		super();
@@ -106,7 +107,15 @@ public class EmpVo {
 		this.departmentId = departmentId;
 	}
 
-	private int departmentId;
+	
+
+	@Override
+	public String toString() {
+		return "EmpVo [employeeId=" + employeeId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
+				+ email + ", phoneNumber=" + phoneNumber + ", hireDate=" + hireDate + ", jobId=" + jobId + ", salary="
+				+ salary + ", commissionPct=" + commissionPct + ", managerId=" + managerId + ", departmentId="
+				+ departmentId + "]";
+	}
 	
 
 }

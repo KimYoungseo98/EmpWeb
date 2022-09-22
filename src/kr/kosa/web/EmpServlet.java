@@ -1,6 +1,9 @@
 package kr.kosa.web;
 
 import java.io.IOException;
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -11,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import kr.kosa.emp.EmpDao;
+import kr.kosa.emp.EmpVo;
 
 /**
  * Servlet implementation class EmpServlet
@@ -24,16 +28,16 @@ public class EmpServlet extends HttpServlet {
 	 */
 	public EmpServlet() {
 		super();
-		System.out.println("EmpServlet 생성자 실행");
+		//System.out.println("EmpServlet 생성자 실행");
 	}
 
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException { // 서블릿 초기화
-		System.out.println("EmpServlet init() 메서드 실행");
-		String email = config.getInitParameter("email");
-		System.out.println("이메일 주소: " + email);
+		//System.out.println("EmpServlet init() 메서드 실행");
+		//String email = config.getInitParameter("email");
+		//System.out.println("이메일 주소: " + email);
 	}
 
 	/**
@@ -45,7 +49,30 @@ public class EmpServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("doGet 메서드 실행");
+		String uri=request.getRequestURI();
+//		System.out.println(uri);
+//		System.out.println(uri.lastIndexOf('/'));
+//		System.out.println(uri.substring(7));
+		String cmd=uri.substring(uri.lastIndexOf('/'));
+		
+		String view="/index.jsp";
+		if("/EmpList.do".equals(cmd)) {
+			System.out.println("모든 사원의 정보를 조회합니다.");
+			//DAO 메서드 호출, request에 정보 저장
+			request.setAttribute("empList", dao.getAllEmps());
+			//System.out.println(dao.getAllEmps().size());
+			//view로 포워드(view 경로를 지정)
+			view="/WEB-INF/views/emp/emplist.jsp";
+		}else if("/EmpInsert.do".equals(cmd)) {
+			System.out.println("입력 양식을 요청합니다.");
+			request.setAttribute("jobIdList", dao.getJobIdList());
+			request.setAttribute("mgrIdList", dao.getEmpIdList());
+			request.setAttribute("deptIdList", dao.getDeptIdList());
+			view="/WEB-INF/views/emp/empform.jsp";
+		}
+		RequestDispatcher disp=request.getRequestDispatcher(view);
+		disp.forward(request, response);
+	/*	System.out.println("doGet 메서드 실행");
 		String cmd = request.getParameter("cmd");
 		String view = "/";
 		if ("empcount".equals(cmd)) {
@@ -94,17 +121,57 @@ public class EmpServlet extends HttpServlet {
 		}
 
 		RequestDispatcher disp = request.getRequestDispatcher(view);
-		disp.forward(request, response);
+		disp.forward(request, response);*/
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String uri=request.getRequestURI();
+	      
+	      String cmd=uri.substring(uri.lastIndexOf('/'));
+	      
+	      if("/EmpInsert.do".equals(cmd)) {
+	         //입력을 처리
+	         String employeeId=request.getParameter("employeeId");
+	         String firstName=request.getParameter("firstName");
+	         String lastName=request.getParameter("lastName");
+	         String email=request.getParameter("email");
+	         String phoneNumber=request.getParameter("phoneNumber");
+	         String jobId=request.getParameter("jobId");
+	         String hireDate=request.getParameter("hireDate");
+	         String salary=request.getParameter("salary");
+	         String commissionPct=request.getParameter("commissionPct");
+	         String managerId=request.getParameter("managerId");
+	         String departmentId=request.getParameter("departmentId");
+	         
+	         EmpVo emp=new EmpVo();
+	         
+	         emp.setEmployeeId(Integer.parseInt(employeeId));
+	         emp.setFirstName(firstName);
+	         emp.setLastName(lastName);
+	         emp.setEmail(email);
+	         emp.setPhoneNumber(phoneNumber);
+	         emp.setJobId(jobId);
+//	         emp.setHireDate(Date.valueOf(hireDate));  1.8부터 사용 사능
+	         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	         try {
+	                  emp.setHireDate(new Date(format.parse(hireDate).getTime()));
+	               } catch (ParseException e) {
+	                  System.out.println("날짜 형식에 맞지 않습니다.");
+	               }
+	         emp.setSalary(Integer.parseInt(salary));
+	         emp.setCommissionPct(Double.parseDouble(commissionPct));
+	         emp.setManagerId(Integer.parseInt(managerId));
+	         emp.setDepartmentId(Integer.parseInt(departmentId));
+	         
+	         dao.intsertEmp(emp);
+	         response.sendRedirect("EmpList.do");
+	         
+	        // System.out.println(emp);
+		}
 	}
 
 }
