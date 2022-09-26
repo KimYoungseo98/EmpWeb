@@ -365,4 +365,67 @@ public class EmpDao {
 		 	}
 		 	return deptIdList;
 		 }
+	 public void updateEmp(EmpVo emp) {
+		 Connection con=null;
+		 try {
+			 con=dataSource.getConnection();
+			 String sql="update employees set first_name=?, last_name=?, email=?, "
+					 +"phone_number=?, hire_date=?, job_id=?, salary=?, commission_pct=?, "
+					 +"manager_id=?, department_id=? "
+					 +"where employee_id=?";
+			 PreparedStatement stmt=con.prepareStatement(sql);
+			 stmt.setString(1, emp.getFirstName());
+			 stmt.setString(2, emp.getLastName());
+			 stmt.setString(3,  emp.getEmail());
+			 stmt.setString(4, emp.getPhoneNumber());
+			 stmt.setDate(5, emp.getHireDate());
+			 stmt.setString(6, emp.getJobId());
+			 stmt.setDouble(7, emp.getSalary());
+			 stmt.setDouble(8, emp.getCommissionPct());
+			 stmt.setInt(9, emp.getManagerId());
+			 stmt.setInt(10, emp.getDepartmentId());
+			 stmt.setInt(11, emp.getEmployeeId());
+			 stmt.executeUpdate(); 
+		 }catch(SQLException e){
+			 throw new RuntimeException(e);
+		 }finally {
+			 if(con!=null) try {con.close();} catch(Exception e) {}
+		 }
+	 }
+
+	public void deleteEmp(int empid, String email) {
+		Connection con=null;
+		try {
+			con=dataSource.getConnection();
+			con.setAutoCommit(false);
+			
+			String sql0="delete job_history where employee_id=?";
+			PreparedStatement stmt0=con.prepareStatement(sql0);
+			stmt0.setInt(1, empid);
+			stmt0.executeUpdate();
+			
+			String sql="delete employees where employee_id=? and email=?";
+			PreparedStatement stmt=con.prepareStatement(sql);
+			stmt.setInt(1,empid);
+			stmt.setString(2, email);
+			stmt.executeUpdate(); 
+			
+			con.commit();
+		}catch(SQLException e) {
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			throw new RuntimeException(e);
+		}finally {
+			try {
+				con.setAutoCommit(true);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			if(con!=null) try {con.close();} catch(Exception e) {}
+		}
+		
+	}
 }

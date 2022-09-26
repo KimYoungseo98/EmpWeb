@@ -69,6 +69,24 @@ public class EmpServlet extends HttpServlet {
 			request.setAttribute("mgrIdList", dao.getEmpIdList());
 			request.setAttribute("deptIdList", dao.getDeptIdList());
 			view="/WEB-INF/views/emp/empform.jsp";
+		}else if("/EmpDetails.do".equals(cmd)) {
+			System.out.println("상세 정보를 요청합니다.");
+			String empidStr=request.getParameter("empid");
+			int empid=Integer.parseInt(empidStr);
+			request.setAttribute("emp", dao.getEmpDetails(empid));
+			view="/WEB-INF/views/emp/empdetails.jsp";
+		}else if("/EmpUpdate.do".equals(cmd)) {
+			System.out.println("수정 정보를 요청합니다.");
+			String empidStr=request.getParameter("empid");
+			int empid=Integer.parseInt(empidStr);
+			request.setAttribute("emp", dao.getEmpDetails(empid));
+			request.setAttribute("jobIdList", dao.getJobIdList());
+			request.setAttribute("mgrIdList", dao.getEmpIdList());
+			request.setAttribute("deptIdList", dao.getDeptIdList());
+			view="/WEB-INF/views/emp/empupdateform.jsp";
+		}else if("/EmpDelete.do".equals(cmd)) {
+			view="/WEB-INF/views/emp/empdeleteform.jsp";
+			
 		}
 		RequestDispatcher disp=request.getRequestDispatcher(view);
 		disp.forward(request, response);
@@ -171,6 +189,49 @@ public class EmpServlet extends HttpServlet {
 	         response.sendRedirect("EmpList.do");
 	         
 	        // System.out.println(emp);
+		}else if("/EmpUpdate.do".equals(cmd)) {
+	         //입력을 처리
+	         String employeeId=request.getParameter("employeeId");
+	         String firstName=request.getParameter("firstName");
+	         String lastName=request.getParameter("lastName");
+	         String email=request.getParameter("email");
+	         String phoneNumber=request.getParameter("phoneNumber");
+	         String jobId=request.getParameter("jobId");
+	         String hireDate=request.getParameter("hireDate");
+	         String salary=request.getParameter("salary");
+	         String commissionPct=request.getParameter("commissionPct");
+	         String managerId=request.getParameter("managerId");
+	         String departmentId=request.getParameter("departmentId");
+	         
+	         EmpVo emp=new EmpVo();
+	         
+	         emp.setEmployeeId(Integer.parseInt(employeeId));
+	         emp.setFirstName(firstName);
+	         emp.setLastName(lastName);
+	         emp.setEmail(email);
+	         emp.setPhoneNumber(phoneNumber);
+	         emp.setJobId(jobId);
+//	         emp.setHireDate(Date.valueOf(hireDate));  1.8부터 사용 사능
+	         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	         try {
+	                  emp.setHireDate(new Date(format.parse(hireDate).getTime()));
+	               } catch (ParseException e) {
+	                  System.out.println("날짜 형식에 맞지 않습니다.");
+	               }
+	         emp.setSalary(Integer.parseInt(salary));
+	         emp.setCommissionPct(Double.parseDouble(commissionPct));
+	         emp.setManagerId(Integer.parseInt(managerId));
+	         emp.setDepartmentId(Integer.parseInt(departmentId));
+	         
+	         dao.updateEmp(emp);
+	         response.sendRedirect("EmpDetails.do?empid="+employeeId);
+	         
+	        // System.out.println(emp);
+		}else if("/EmpDelete.do".equals(cmd)) {
+			String empid=request.getParameter("empid");
+			String email=request.getParameter("email");
+			dao.deleteEmp(Integer.parseInt(empid),email);
+			response.sendRedirect("EmpList.do");
 		}
 	}
 

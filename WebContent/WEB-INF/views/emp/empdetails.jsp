@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,7 +8,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-<!--  --> 
+<h1>사원 상세 정보</h1>
+<c:if test="${not empty emp}">
 사원 아이디: ${emp.employeeId }<br> <%-- emp.getEmployeeId() --%>
 이름: ${emp.firstName } ${emp.lastName }<br>
 이메일: ${emp.email }<br>
@@ -18,6 +20,11 @@
 보너스율: ${emp.commissionPct }<br>
 매니저아이디: ${emp.managerId }<br>
 부서아이디: ${emp.departmentId }<br>
-
+<a href="EmpUpdate.do?empid=${emp.employeeId}">사원정보 수정</a>
+<a href="EmpDelete.do?empid=${emp.employeeId}">사원정보 삭제</a>
+</c:if>
+<c:if test="${empty emp}">
+사원정보가 없습니다.
+</c:if>
 </body>
 </html>

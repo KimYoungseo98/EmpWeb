@@ -24,7 +24,7 @@
 <th>부서번호</th></tr>
 <c:forEach var="emp" items="${empList}">
 <tr>
-<td>${emp.employeeId}</td>
+<td><a href="EmpDetails.do?empid=${emp.employeeId}">${emp.employeeId}</a></td>
 <td> ${emp.firstName} ${emp.lastName}</td>
 <td> ${emp.email}</td>
 <td> ${emp.phoneNumber}</td>
